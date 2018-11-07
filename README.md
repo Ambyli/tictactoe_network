@@ -1,2 +1,2 @@
 # tictactoe_network
-A simple tictactoe program that can be written over the internet.
+A simple tictactoe program that can be played over the internet.
