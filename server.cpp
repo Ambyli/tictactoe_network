@@ -4,16 +4,19 @@
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <string>
+
+using namespace std;
 
 #define MAXBUF 256 /* MAX I/O buffer size */
 #define MAXLINE 256 /* Max text line length */
 #define LISTENQ 5 /* Second argument to listen() */
 
 /* Error message response */
-void error(char *msg)
+void error(string msg)
 {
-  perror(msg);
-  return 1;
+  perror((char*)msg);
+  exit(1);
 }
 
 int main(int argc, char *argv[])
