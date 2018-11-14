@@ -8,7 +8,7 @@
 void error(char *msg)
 {
     perror(msg);
-    exit(1);
+    return 1;
 }
 
 int main(int argc, char *argv[])
