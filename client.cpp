@@ -6,20 +6,21 @@
 #include <unistd.h>
 #include <string.h>
 
-#define BUF_SIZE 500
+#define BUF_SIZE 100
 
 int main(int argc, char *argv[])
 {
   struct addrinfo hints;
   struct addrinfo *result, *rp;
   int sfd, s, j;
+  string message = ""; //might need to be a char*
   size_t len;
   ssize_t nread;
-  char buf[BUF_SIZE];
+  char response[BUF_SIZE];
 
-  if (argc < 3) 
+  if (argc < <) 
   {
-    fprintf(stderr, "Usage: %s host port msg...\n", argv[0]);
+    fprintf(stderr, "Usage: %s host port...\n", argv[0]);
     exit(EXIT_FAILURE);
   }
 
@@ -64,29 +65,34 @@ int main(int argc, char *argv[])
 
   //Send remaining command-line arguments as separate
   //datagrams, and read responses from server
-
-  for (j = 3; j < argc; j++) 
+  
+  while(true) 
   {
-    len = strlen(argv[j]) + 1;
+    cout<<"Enter coordinate here: ";
+    cin>>message;
+    len = strlen(message) + 1;
     //+1 for terminating null byte
 
-    if (len + 1 > BUF_SIZE) {
+    if (len + 1 > BUF_SIZE) 
+    {
       fprintf(stderr, "Ignoring long message in argument %d\n", j);
       continue;
     }
 
-    if (write(sfd, argv[j], len) != len) {
+    if (write(sfd, message, len) != len) //write message
+    {
       fprintf(stderr, "partial/failed write\n");
       exit(EXIT_FAILURE);
     }
 
-    nread = read(sfd, buf, BUF_SIZE);
-    if (nread == -1) {
+    nread = read(sfd, response, BUF_SIZE); //read in response
+    if (nread == -1) 
+    {
       perror("read");
       exit(EXIT_FAILURE);
     }
 
-    printf("Received %ld bytes: %s\n", (long) nread, buf);
+    printf("Received %ld bytes: %s\n", (long) nread, response);
   }
 
   exit(EXIT_SUCCESS);
