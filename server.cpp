@@ -44,7 +44,8 @@ int main(int argc, char *argv[])
      If socket(2) (or bind(2)) fails, we (close the socket
      and) try the next address. */
 
-  for (rp = result; rp != NULL; rp = rp->ai_next) {
+  for (rp = result; rp != NULL; rp = rp->ai_next) 
+  {
     sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
     if (sfd == -1)
       continue;
@@ -55,12 +56,13 @@ int main(int argc, char *argv[])
     close(sfd);
   }
 
-  if (rp == NULL) {               /* No address succeeded */
+  if (rp == NULL) //No address succeeded
+  {         
     fprintf(stderr, "Could not bind\n");
     exit(EXIT_FAILURE);
   }
 
-  freeaddrinfo(result);           /* No longer needed */
+  freeaddrinfo(result); //No longer needed
 
   //main process
   while(true) 
@@ -72,12 +74,13 @@ int main(int argc, char *argv[])
 
     char host[NI_MAXHOST], service[NI_MAXSERV];
 
-    s = getnameinfo((struct sockaddr *) &peer_addr, peer_addr_len, host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
-    if (s == 0)
+    nameinfo_result = getnameinfo((struct sockaddr *) &peer_addr, peer_addr_len, host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
+    if (nameinfo_result == 0)
       printf("Received %ld bytes from %s:%s\n", (long) nread, host, service);
     else
       fprintf(stderr, "getnameinfo: %s\n", gai_strerror(s));
-
+    
+    //send ack to client and check if ack failed to send
     if (sendto(sfd, buf, nread, 0, (struct sockaddr *) &peer_addr, peer_addr_len) != nread)
       fprintf(stderr, "Error sending response\n");
   }
