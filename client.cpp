@@ -2,29 +2,33 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <netdb.h> 
+#include <netdb.h>
+
+#define MAXBUF 256 /* MAX I/O buffer size */
+#define MAXLINE 256 /* Max text line length */
+#define LISTENQ 5 /* Second argument to listen() */
 
 /* Error message response */
 void error(char *msg)
 {
     perror(msg);
-    exit(0);
+    return 1;
 }
 
 int main(int argc, char *argv[])
 {
     int sockfd, portno, response;
-
+    
     struct sockaddr_in serv_addr;
     struct hostent *server;
 
-    char buffer[256]; //limits how much text can be sent to the server
+    char buffer[MAXBUF]; //limits how much text can be sent to the server
     
     //too little arguments
     if (argc < 3) 
     {
        fprintf(stderr,"usage %s hostname port\n", argv[0]);
-       exit(0);
+       return 0;
     }
     
     portno = atoi(argv[2]);
@@ -56,8 +60,8 @@ int main(int argc, char *argv[])
 
 
     printf("Please enter the message: ");
-    bzero(buffer,256);
-    fgets(buffer,255,stdin);
+    bzero(buffer, MAXBUF);
+    fgets(buffer, MAXBUF-1, stdin);
    
     //write to server
     response = write(sockfd, buffer, strlen(buffer));
@@ -65,10 +69,10 @@ int main(int argc, char *argv[])
     //nothing written error
     if (response < 0) 
          error("ERROR writing to socket");
-    bzero(buffer,256);
+    bzero(buffer, MAXBUF);
 
     //read from server
-    response = read(sockfd,buffer,255);
+    response = read(sockfd, buffer, MAXBUF-1);
 
     //nothing retrieved error
     if (response < 0) 
