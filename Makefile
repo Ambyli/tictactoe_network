@@ -1,11 +1,17 @@
 HEADERS = tictactoe.h
+SOURCES = client.cpp server.cpp tictactoe.cpp
 OBJECTS = server.o client.o tictactoe.o
 
-server: $(OBJECTS)
-	g++ server.cpp tictactoe.cpp -o server
 
-client: $(OBJECTS)
-	g++ client.cpp tictactoe.cpp -o client
+
+build_server: $(OBJECTS)
+	g++ -o server -g $(OBJECTS)
+
+build_client: $(OBJECTS)
+	g++ -o client -g $(OBJECTS)
+
+build: $(OBJECTS)
+	g++ -c $(SOURCES)
 
 clean:
 	rm -i *.o client server

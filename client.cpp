@@ -1,85 +1,93 @@
-#include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 
-#define MAXBUF 256 /* MAX I/O buffer size */
-#define MAXLINE 256 /* Max text line length */
-#define LISTENQ 5 /* Second argument to listen() */
-
-/* Error message response */
-void error(char *msg)
-{
-  perror(msg);
-  exit(1);
-}
+#define BUF_SIZE 500
 
 int main(int argc, char *argv[])
 {
-  int sockfd, portno, response;
+  struct addrinfo hints;
+  struct addrinfo *result, *rp;
+  int sfd, s, j;
+  size_t len;
+  ssize_t nread;
+  char buf[BUF_SIZE];
 
-  struct sockaddr_in serv_addr;
-  struct hostent *server;
-
-  char buffer[MAXBUF]; //limits how much text can be sent to the server
-
-  //too little arguments
   if (argc < 3) 
   {
-    fprintf(stderr,"usage %s hostname port\n", argv[0]);
-    return 0;
+    fprintf(stderr, "Usage: %s host port msg...\n", argv[0]);
+    exit(EXIT_FAILURE);
   }
-  
-  //get port number
-  portno = atoi(argv[2]);
-  //open socket
-  sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  //socket error
-  if (sockfd < 0) 
-    error("ERROR opening socket");
 
-  //retrieve host address from argument
-  server = gethostbyname(argv[1]);
-  //if no host address was given
-  if (server == NULL) 
+  //Obtain address matching host and port
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+  hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
+  hints.ai_flags = 0;
+  hints.ai_protocol = 0;          /* Any protocol */
+
+  s = getaddrinfo(argv[1], argv[2], &hints, &result);
+  if (s != 0) {
+    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+    exit(EXIT_FAILURE);
+  }
+
+  // getaddrinfo() returns a list of address structures.
+  // Try each address until we successfully connect(2).
+  // If socket(2) (or connect(2)) fails, we (close the socket
+  // and) try the next address.
+
+  for (rp = result; rp != NULL; rp = rp->ai_next) 
   {
-    fprintf(stderr,"ERROR, no such host\n");
-    return 0;
+    sfd = socket(rp->ai_family, rp->ai_socktype,
+        rp->ai_protocol);
+    if (sfd == -1)
+      continue;
+
+    if (connect(sfd, rp->ai_addr, rp->ai_addrlen) != -1)
+      break; //Success
+
+    close(sfd);
   }
 
-  bzero((char *) &serv_addr, sizeof(serv_addr));
-  serv_addr.sin_family = AF_INET;
+  if (rp == NULL) //No address succeeded
+  {  
+    fprintf(stderr, "Could not connect\n");
+    exit(EXIT_FAILURE);
+  }
 
-  bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
+  freeaddrinfo(result); //No longer needed
 
-  serv_addr.sin_port = htons(portno);
+  //Send remaining command-line arguments as separate
+  //datagrams, and read responses from server
 
-  //error connecting
-  if (connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0) 
-    error("ERROR connecting");
+  for (j = 3; j < argc; j++) 
+  {
+    len = strlen(argv[j]) + 1;
+    //+1 for terminating null byte
 
+    if (len + 1 > BUF_SIZE) {
+      fprintf(stderr, "Ignoring long message in argument %d\n", j);
+      continue;
+    }
 
-  printf("Please enter the message: ");
-  bzero(buffer, MAXBUF);
-  fgets(buffer, MAXBUF-1, stdin);
+    if (write(sfd, argv[j], len) != len) {
+      fprintf(stderr, "partial/failed write\n");
+      exit(EXIT_FAILURE);
+    }
 
-  //write to server
-  response = write(sockfd, buffer, strlen(buffer));
+    nread = read(sfd, buf, BUF_SIZE);
+    if (nread == -1) {
+      perror("read");
+      exit(EXIT_FAILURE);
+    }
 
-  //nothing written error
-  if (response < 0) 
-    error("ERROR writing to socket");
-  bzero(buffer, MAXBUF);
+    printf("Received %ld bytes: %s\n", (long) nread, buf);
+  }
 
-  //read from server
-  response = read(sockfd, buffer, MAXBUF-1);
-
-  //nothing retrieved error
-  if (response < 0) 
-    error("ERROR reading from socket");
-
-  //print response
-  printf("%s\n",buffer);
-  return 0;
+  exit(EXIT_SUCCESS);
 }
