@@ -74,8 +74,8 @@ int main(int argc, char *argv[])
 
     char host[NI_MAXHOST], service[NI_MAXSERV];
 
-    nameinfo_result = getnameinfo((struct sockaddr *) &peer_addr, peer_addr_len, host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
-    if (nameinfo_result == 0)
+    s = getnameinfo((struct sockaddr *) &peer_addr, peer_addr_len, host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
+    if (s == 0)
       printf("Received %ld bytes from %s:%s\n", (long) nread, host, service);
     else
       fprintf(stderr, "getnameinfo: %s\n", gai_strerror(s));
