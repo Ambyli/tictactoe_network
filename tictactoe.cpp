@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "tictactoe.h"
 #include <iostream>
 
@@ -25,7 +24,7 @@ int TicTacToe::insert_x(int cord)
 }
 
 //places a 'O' in a cordinate
-int TicTacToe::insert_o(int row_cord, int col_cord)
+int TicTacToe::insert_o(int cord)
 {
   if(board[cord] == ' ')
   {
@@ -46,11 +45,11 @@ void TicTacToe::resetBoard()
 void TicTacToe::printBoard()
 {
   cout<<" _ _ _ "<<endl;
-  cout<<"|"<<board[0]<<"|"<<board[1]<<"|"<board[2]<<"|"<<endl;
+  cout<<"|"<<board[0]<<"|"<<board[1]<<"|"<<board[2]<<"|"<<endl;
   cout<<" _ _ _ "<<endl;
-  cout<<"|"<<board[3]<<"|"<<board[4]<<"|"<board[5]<<"|"<<endl;
+  cout<<"|"<<board[3]<<"|"<<board[4]<<"|"<<board[5]<<"|"<<endl;
   cout<<" _ _ _ "<<endl;
-  cout<<"|"<<board[6]<<"|"<<board[7]<<"|"<board[8]<<"|"<<endl;
+  cout<<"|"<<board[6]<<"|"<<board[7]<<"|"<<board[8]<<"|"<<endl;
   cout<<" _ _ _ "<<endl;
 }
 
@@ -78,7 +77,7 @@ void TicTacToe::o_won()
 }
 
 //prints the scoreboard
-void TicTacToe::printScore();
+void TicTacToe::printScore()
 {
   cout<<"X's score: "<<x_score<<endl;
   cout<<"O's score: "<<o_score<<endl;
