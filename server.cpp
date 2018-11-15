@@ -5,18 +5,22 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <iostream>
 
-#define BUF_SIZE 500
+using namespace std;
+
+#define BUF_SIZE 100
 
 int main(int argc, char *argv[])
 {
   struct addrinfo hints;
   struct addrinfo *result, *rp;
-  int sfd, s;
+  int sfd, s, len;
   struct sockaddr_storage peer_addr;
   socklen_t peer_addr_len;
   ssize_t nread;
   char buf[BUF_SIZE];
+  string message = "";
 
   if (argc != 2) 
   {
@@ -76,12 +80,27 @@ int main(int argc, char *argv[])
 
     s = getnameinfo((struct sockaddr *) &peer_addr, peer_addr_len, host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
     if (s == 0)
-      printf("Received %ld bytes from %s:%s\n", (long) nread, host, service);
+      printf("Received %ld bytes: %s\n", (long) nread, buf);
     else
       fprintf(stderr, "getnameinfo: %s\n", gai_strerror(s));
+
+    //send response to client and check if ack failed to send
+    while(true)
+    {
+      cout<<"Enter coordinate here: ";
+      cin>>message;
+      len = message.length() + 1; //+1 for terminating null byte, this is used only if message is a string
     
-    //send ack to client and check if ack failed to send
-    if (sendto(sfd, buf, nread, 0, (struct sockaddr *) &peer_addr, peer_addr_len) != nread)
+      if(len > 2) //2 refers to message size + 1 for null byte
+      {
+        fprintf(stderr, "Exceeding message limitations\n");
+        continue;
+      }
+      break;
+    }
+
+    //send message
+    if (sendto(sfd, message.c_str(), nread, 0, (struct sockaddr *) &peer_addr, peer_addr_len) != nread)
       fprintf(stderr, "Error sending response\n");
   }
 }

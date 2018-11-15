@@ -2,10 +2,6 @@
 #ifndef TICTACTOE_H
 #define TICTACTOE_H
 
-#include <iostream>
-
-using namespace std;
-
 class TicTacToe
 {
   public:
@@ -14,10 +10,12 @@ class TicTacToe
     TicTacToe();
 
     //places a 'X' in a cordinate
-    void insert_x(int row_cord, int col_cord);
+    //return: 0 for valid move, 1 for invalid move
+    int insert_x(int cord);
 
     //places a 'O' in a cordinate
-    void insert_o(int row_cord, int col_cord);
+    //return: 0 for valid move, 1 for invalid move
+    int insert_o(int cord);
 
     //resets the game board
     void resetBoard();
@@ -42,22 +40,22 @@ class TicTacToe
   private:
     
     //contains the game board, default empty
-    char board[3][3]; //this will hold the 2D board as an array, it being 3x3
+    char board[9]; //this will hold the 2D board as a 1D array, it being 3x3
 
     //checks for win condition in rows
-    char checkRow();
+    void checkRow();
 
     //checks for win condition in columns
-    char checkColumn();
+    void checkColumn();
 
     //checks for win condition in diagonals
-    char checkDiag();
+    void checkDiag();
 
     //carries 'X' points
-    int x_score = 0;
+    int x_score;
 
     //carries 'O' points
-    int o_score = 0;
+    int o_score;
 
 };
 
