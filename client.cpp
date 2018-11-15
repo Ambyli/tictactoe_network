@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
 
 #define BUF_SIZE 100
 
@@ -12,13 +16,13 @@ int main(int argc, char *argv[])
 {
   struct addrinfo hints;
   struct addrinfo *result, *rp;
-  int sfd, s, j;
+  int sfd, s;
   string message = ""; //might need to be a char*
   size_t len;
   ssize_t nread;
   char response[BUF_SIZE];
 
-  if (argc < <) 
+  if (argc != 3) 
   {
     fprintf(stderr, "Usage: %s host port...\n", argv[0]);
     exit(EXIT_FAILURE);
@@ -68,18 +72,29 @@ int main(int argc, char *argv[])
   
   while(true) 
   {
+    //aquire message from user
     cout<<"Enter coordinate here: ";
-    cin>>message;
-    len = strlen(message) + 1;
-    //+1 for terminating null byte
-
+    cin>>message; //setw() limits size of user input
+    len = message.length() + 1; //+1 for terminating null byte, this is used only if message is a string
+    
+    
+    //create message limitations
+    //if(stoi(message) < 0 && stoi(message) > 9)
+    if(len > 2) //2 refers to message size + 1 for null byte
+    {
+      fprintf(stderr, "Exceeding message limitations\n");
+      continue;
+    }
+    //just in case message is larger than BUF_SIZE (useful for messages larger than intended for tictactoe)
     if (len + 1 > BUF_SIZE) 
     {
-      fprintf(stderr, "Ignoring long message in argument %d\n", j);
+      fprintf(stderr, "Ignoring long message\n");
       continue;
     }
 
-    if (write(sfd, message, len) != len) //write message
+
+    //begin writing message
+    if (write(sfd, message.c_str(), len) != len) //write message, if message is to be a string then convert to c string using c_str()
     {
       fprintf(stderr, "partial/failed write\n");
       exit(EXIT_FAILURE);

@@ -25,10 +25,10 @@ int main(int argc, char *argv[])
   }
 
   memset(&hints, 0, sizeof(struct addrinfo));
-  hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
-  hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
-  hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
-  hints.ai_protocol = 0;          /* Any protocol */
+  hints.ai_family = AF_UNSPEC;    //allow IPv4 or IPv6
+  hints.ai_socktype = SOCK_DGRAM; //datagram socket
+  hints.ai_flags = AI_PASSIVE;    //for wildcard IP address
+  hints.ai_protocol = 0;          //any protocol
   hints.ai_canonname = NULL;
   hints.ai_addr = NULL;
   hints.ai_next = NULL;
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
       continue;
 
     if (bind(sfd, rp->ai_addr, rp->ai_addrlen) == 0)
-      break;                  /* Success */
+      break; //bind success
 
     close(sfd);
   }
