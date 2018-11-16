@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <iostream>
+#include "tictactoe.h"
 
 using namespace std;
 
@@ -20,7 +21,8 @@ int main(int argc, char *argv[])
   socklen_t peer_addr_len;
   ssize_t nread;
   char buf[BUF_SIZE];
-  string message = "";
+  string message = ""; //might need to be a char*
+  TicTacToe game = TicTacToe();
 
   if (argc != 2) 
   {
@@ -87,6 +89,10 @@ int main(int argc, char *argv[])
     //send response to client and check if ack failed to send
     while(true)
     {
+      //print game board
+      game.printBoard();
+
+
       cout<<"Enter coordinate here: ";
       cin>>message;
       len = message.length() + 1; //+1 for terminating null byte, this is used only if message is a string

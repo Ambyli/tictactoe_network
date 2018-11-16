@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <iostream>
+#include "tictactoe.h"
 
 using namespace std;
 
@@ -20,6 +21,7 @@ int main(int argc, char *argv[])
   size_t len;
   ssize_t nread;
   char response[BUF_SIZE];
+  TicTacToe game = TicTacToe();
 
   if (argc != 3) 
   {
@@ -71,6 +73,10 @@ int main(int argc, char *argv[])
   
   while(true) 
   {
+    //print game board
+    game.printBoard();
+
+    
     //aquire message from user
     cout<<"Enter coordinate here: ";
     cin>>message; //setw() limits size of user input

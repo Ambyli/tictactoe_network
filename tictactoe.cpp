@@ -9,6 +9,13 @@ TicTacToe::TicTacToe()
   fill_n(board, 9, ' ');
   x_score = 0;
   o_score = 0;
+  turn_counter = 0;
+}
+
+void TicTacToe::printTitle()
+{
+  cout<<"TicTacToe!\t"<<endl;
+  printScore();
 }
 
 //places a 'X' in a cordinate
@@ -17,6 +24,7 @@ int TicTacToe::insert_x(int cord)
   if(board[cord] == ' ')
   {
     board[cord] = 'x';
+    turnCount(); //turn was valid, +1
     return 0; //valid move
   }
   else
@@ -29,7 +37,8 @@ int TicTacToe::insert_o(int cord)
   if(board[cord] == ' ')
   {
     board[cord] = 'o';
-    return 0;
+    turnCount(); //turn was valid, +1
+    return 0; //valid move
   }
   else
     return 1; //invalid move
@@ -39,27 +48,28 @@ int TicTacToe::insert_o(int cord)
 void TicTacToe::resetBoard()
 {
   fill_n(board, 9, ' ');
+  turnCount();
 }
 
 //prints the game board
 void TicTacToe::printBoard()
 {
-  cout<<" _ _ _ "<<endl;
+  cout<<" - - - "<<endl;
   cout<<"|"<<board[0]<<"|"<<board[1]<<"|"<<board[2]<<"|"<<endl;
-  cout<<" _ _ _ "<<endl;
+  cout<<" - - - "<<endl;
   cout<<"|"<<board[3]<<"|"<<board[4]<<"|"<<board[5]<<"|"<<endl;
-  cout<<" _ _ _ "<<endl;
+  cout<<" - - - "<<endl;
   cout<<"|"<<board[6]<<"|"<<board[7]<<"|"<<board[8]<<"|"<<endl;
-  cout<<" _ _ _ "<<endl;
+  cout<<" - - - "<<endl;
 }
 
 //uses checkRow, checkColumn, and checkDiag to see if either 'O' or 'X' won
 //returns 'O' or 'X' if win condition is met
-char TicTacToe::checkBoard()
+char TicTacToe::checkBoard(char s)
 {
-  checkRow();
-  checkColumn();
-  checkDiag();
+  checkRow(s);
+  checkColumn(s);
+  checkDiag(s);
 }
 
 //tallies win condition with +1
@@ -83,18 +93,60 @@ void TicTacToe::printScore()
   cout<<"O's score: "<<o_score<<endl;
 }
 
-//checks for win condition in rows
-void TicTacToe::checkRow()
+void TicTacToe::turnCount()
 {
+  turn_counter += 1;
+} 
+
+//checks for win condition in rows depending on what s is
+void TicTacToe::checkRow(char s)
+{
+  for(int i = 0; i <= 6; i+= 3) //increment by each row
+  {
+    //does everything in the 3 rows == s?
+    if(s == board[i] && s == board[i + 1] && s == board[i + 2]) 
+    {
+      if(s == 'x') //if x won
+        x_won();
+      else         //if o won
+        o_won();
+    }
+  }
 }
 
 //checks for win condition in columns
-void TicTacToe::checkColumn()
+void TicTacToe::checkColumn(char s)
 {
+  for(int i = 0; i < 3; i++)
+  {
+    //does everything in the 3 columns == s?
+    if(s == board[i] && s == board[i + 3] && s == board[i + 6])
+    {
+      if(s == 'x') //if x won
+        x_won();
+      else         //if o won
+        o_won();
+    }
+  }
 }
 
 //checks for win condition in diagonals
-void TicTacToe::checkDiag()
+void TicTacToe::checkDiag(char s)
 {
+  //does everything in the 2 diagonals == s?
+  if(s == board[0] && s == board[4] && s == board[8])
+  {
+      if(s == 'x') //if x won
+        x_won();
+      else
+        o_won();
+  }
+  if(s == board[2] && s == board[4] && s == board[6])
+  {
+      if(s == 'x') //if x won
+        x_won();
+      else         //if o won
+        o_won();
+  }
 }
 
