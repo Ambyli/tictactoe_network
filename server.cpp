@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
   struct sockaddr_storage peer_addr;
   socklen_t peer_addr_len;
   ssize_t nread;
-  char buf[BUF_SIZE];
+  char response[BUF_SIZE];
   string message = ""; //might need to be a char*
   TicTacToe game = TicTacToe();
 
@@ -70,11 +70,14 @@ int main(int argc, char *argv[])
 
   freeaddrinfo(result); //No longer needed
 
+  //initial wait statement (just for looks)
+  cout<<"Waiting for client response..."<<endl;
+
   //main process
   while(true) 
   {
     peer_addr_len = sizeof(struct sockaddr_storage);
-    nread = recvfrom(sfd, buf, BUF_SIZE, 0, (struct sockaddr *) &peer_addr, &peer_addr_len);
+    nread = recvfrom(sfd, response, BUF_SIZE, 0, (struct sockaddr *) &peer_addr, &peer_addr_len);
     if (nread == -1)
       continue; //Ignore failed request
 
@@ -82,18 +85,33 @@ int main(int argc, char *argv[])
 
     s = getnameinfo((struct sockaddr *) &peer_addr, peer_addr_len, host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
     if (s == 0)
-      printf("Received %ld bytes: %s\n", (long) nread, buf);
+      printf("Received %ld bytes: %s\n", (long) nread, response);
     else
       fprintf(stderr, "getnameinfo: %s\n", gai_strerror(s));
 
-    //send response to client and check if ack failed to send
+    //send opponent move into board
+    if(game.insert_x(stoi(response)) == 0)
+    {
+      game.printBoard();
+      game.checkBoard();
+      game.printScore();
+    }
+    else
+    {
+      cout<<"Client sent an invalid move!"<<endl;
+      continue; //wait for client response again
+    }
+
+    //send response to client and check 
+    //if ack failed to send
+    
     while(true)
     {
       //print game board
       game.printBoard();
 
 
-      cout<<"Enter coordinate here: ";
+      cout<<"Enter coordinate from 0-9 here: ";
       cin>>message;
       len = message.length() + 1; //+1 for terminating null byte, this is used only if message is a string
     
@@ -105,8 +123,24 @@ int main(int argc, char *argv[])
       break;
     }
 
+    //send move into board
+    if(game.insert_o(stoi(message)) == 0)
+    {
+      game.printBoard(); //print board with new valid move
+      game.checkBoard(); //checkboard for win condition
+      game.printScore();
+    }
+    else
+    {
+      cout<<"Invalid move!"<<endl;
+      continue; //invalid move
+    }
+
     //send message
     if (sendto(sfd, message.c_str(), nread, 0, (struct sockaddr *) &peer_addr, peer_addr_len) != nread)
       fprintf(stderr, "Error sending response\n");
+    
+    //wait for client response now
+    cout<<"Waiting for client response..."<<endl;
   }
 }

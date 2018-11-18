@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 
     
     //aquire message from user
-    cout<<"Enter coordinate here: ";
+    cout<<"Enter coordinate from 0-9 here: ";
     cin>>message; //setw() limits size of user input
     len = message.length() + 1; //+1 for terminating null byte, this is used only if message is a string
     
@@ -98,6 +98,19 @@ int main(int argc, char *argv[])
       continue;
     }
 
+    //send move into board
+    if(game.insert_x(stoi(message)) == 0)
+    {
+      game.printBoard(); //print board with new valid move
+      game.checkBoard(); //checkboard for win condition
+      game.printScore();
+    }
+    else
+    {
+      cout<<"Invalid move!"<<endl;
+      continue; //invalid move
+    }
+
 
     //begin writing message/move
     if (write(sfd, message.c_str(), len) != len) //write message, if message is to be a string then convert to c string using c_str()
@@ -105,10 +118,9 @@ int main(int argc, char *argv[])
       fprintf(stderr, "partial/failed write\n");
       exit(EXIT_FAILURE);
     }
-
-    //send move into board
-    game.insert_x(stoi(message));
-
+    
+    cout<<"Waiting for server response..."<<endl;
+    
     //begin reading message/move
     nread = read(sfd, response, BUF_SIZE); //read in response
     if (nread == -1) 
@@ -120,7 +132,18 @@ int main(int argc, char *argv[])
     printf("Received %ld bytes: %s\n", (long) nread, response);
 
     //send opponent move into board
-    game.insert_o(stoi(response));
+    if(game.insert_o(stoi(response)) == 0)
+    {
+      game.printBoard();
+      game.checkBoard();
+      game.printScore();
+    }
+    else
+    {
+      cout<<"Server sent an invalid move!"<<endl;
+      continue; //wait for client response again
+    }
+
   }
 
   exit(EXIT_SUCCESS);
