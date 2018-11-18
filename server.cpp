@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   string message = ""; //might need to be a char*
   TicTacToe game = TicTacToe();
 
-  if (argc != 2) 
+  if (argc != 2) //max/min arg count 
   {
     fprintf(stderr, "Usage: %s port\n", argv[0]);
     exit(EXIT_FAILURE);
@@ -76,6 +76,9 @@ int main(int argc, char *argv[])
   //main process
   while(true) 
   {
+    
+    /*CLIENT*/
+
     peer_addr_len = sizeof(struct sockaddr_storage);
     nread = recvfrom(sfd, response, BUF_SIZE, 0, (struct sockaddr *) &peer_addr, &peer_addr_len);
     if (nread == -1)
@@ -93,7 +96,7 @@ int main(int argc, char *argv[])
     if(game.insert_x(stoi(response)) == 0)
     {
       game.printBoard();
-      game.checkBoard();
+      game.checkBoard('x');
       game.printScore();
     }
     else
@@ -102,9 +105,12 @@ int main(int argc, char *argv[])
       continue; //wait for client response again
     }
 
+
+
+
+    /*SERVER*/
+
     //send response to client and check 
-    //if ack failed to send
-    
     while(true)
     {
       //print game board
@@ -114,32 +120,33 @@ int main(int argc, char *argv[])
       cout<<"Enter coordinate from 0-9 here: ";
       cin>>message;
       len = message.length() + 1; //+1 for terminating null byte, this is used only if message is a string
-    
+
       if(len > 2) //2 refers to message size + 1 for null byte
       {
         fprintf(stderr, "Exceeding message limitations\n");
         continue;
       }
+      //send move into board
+      if(game.insert_o(stoi(message)) == 0)
+      {
+        game.printBoard(); //print board with new valid move
+        game.checkBoard('o'); //checkboard for win condition
+        game.printScore();
+      }
+      else
+      {
+        cout<<"Invalid move!"<<endl;
+        continue; //invalid move
+      }
+
       break;
     }
 
-    //send move into board
-    if(game.insert_o(stoi(message)) == 0)
-    {
-      game.printBoard(); //print board with new valid move
-      game.checkBoard(); //checkboard for win condition
-      game.printScore();
-    }
-    else
-    {
-      cout<<"Invalid move!"<<endl;
-      continue; //invalid move
-    }
 
     //send message
     if (sendto(sfd, message.c_str(), nread, 0, (struct sockaddr *) &peer_addr, peer_addr_len) != nread)
       fprintf(stderr, "Error sending response\n");
-    
+
     //wait for client response now
     cout<<"Waiting for client response..."<<endl;
   }

@@ -57,6 +57,8 @@ class TicTacToe
     //checks for win condition in diagonals
     void checkDiag(char s); //naive
 
+    void checkTie();
+
     //carries 'X' points
     int x_score;
 

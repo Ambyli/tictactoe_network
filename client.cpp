@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   char response[BUF_SIZE];
   TicTacToe game = TicTacToe();
 
-  if (argc != 3) 
+  if (argc != 3) //max/min arg count
   {
     fprintf(stderr, "Usage: %s host port...\n", argv[0]);
     exit(EXIT_FAILURE);
@@ -74,6 +74,9 @@ int main(int argc, char *argv[])
   
   while(true) 
   {
+
+    /*CLIENT*/
+
     //print game board
     game.printBoard();
 
@@ -102,7 +105,7 @@ int main(int argc, char *argv[])
     if(game.insert_x(stoi(message)) == 0)
     {
       game.printBoard(); //print board with new valid move
-      game.checkBoard(); //checkboard for win condition
+      game.checkBoard('x'); //checkboard for win condition
       game.printScore();
     }
     else
@@ -119,6 +122,11 @@ int main(int argc, char *argv[])
       exit(EXIT_FAILURE);
     }
     
+    
+
+
+    /*SERVER*/
+
     cout<<"Waiting for server response..."<<endl;
     
     //begin reading message/move
@@ -135,7 +143,7 @@ int main(int argc, char *argv[])
     if(game.insert_o(stoi(response)) == 0)
     {
       game.printBoard();
-      game.checkBoard();
+      game.checkBoard('o');
       game.printScore();
     }
     else

@@ -48,7 +48,7 @@ int TicTacToe::insert_o(int cord)
 void TicTacToe::resetBoard()
 {
   fill_n(board, 9, ' ');
-  turnCount();
+  turn_counter = 0;
 }
 
 //prints the game board
@@ -70,6 +70,7 @@ char TicTacToe::checkBoard(char s)
   checkRow(s);
   checkColumn(s);
   checkDiag(s);
+  checkTie();
 }
 
 //tallies win condition with +1
@@ -91,6 +92,7 @@ void TicTacToe::printScore()
 {
   cout<<"X's score: "<<x_score<<endl;
   cout<<"O's score: "<<o_score<<endl;
+  cout<<"Turn: "<<turn_counter<<endl;
 }
 
 void TicTacToe::turnCount()
@@ -150,3 +152,13 @@ void TicTacToe::checkDiag(char s)
   }
 }
 
+//check for tie
+void TicTacToe::checkTie()
+{
+  int MAX_TURNS = 9;
+  if(turn_counter == MAX_TURNS)
+  {
+    resetBoard();
+    turn_counter = 0;
+  }
+}
