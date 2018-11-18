@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <string> //probably dont need
 #include <iostream>
 #include "tictactoe.h"
 
@@ -98,13 +99,17 @@ int main(int argc, char *argv[])
     }
 
 
-    //begin writing message
+    //begin writing message/move
     if (write(sfd, message.c_str(), len) != len) //write message, if message is to be a string then convert to c string using c_str()
     {
       fprintf(stderr, "partial/failed write\n");
       exit(EXIT_FAILURE);
     }
 
+    //send move into board
+    game.insert_x(stoi(message));
+
+    //begin reading message/move
     nread = read(sfd, response, BUF_SIZE); //read in response
     if (nread == -1) 
     {
@@ -113,6 +118,9 @@ int main(int argc, char *argv[])
     }
 
     printf("Received %ld bytes: %s\n", (long) nread, response);
+
+    //send opponent move into board
+    game.insert_o(stoi(response));
   }
 
   exit(EXIT_SUCCESS);
