@@ -22,9 +22,9 @@ int main(int argc, char *argv[])
   size_t len;
   ssize_t nread;
   char response[BUF_SIZE];
-  TicTacToe game = TicTacToe();
+  TicTacToe game = TicTacToe(); //create game object
 
-  if (argc != 3) //max/min arg count
+  if (argc != 3) //max min arg count
   {
     fprintf(stderr, "Usage: %s host port...\n", argv[0]);
     exit(EXIT_FAILURE);
@@ -32,10 +32,10 @@ int main(int argc, char *argv[])
 
   //Obtain address matching host and port
   memset(&hints, 0, sizeof(struct addrinfo));
-  hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
-  hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
+  hints.ai_family = AF_UNSPEC; //allow IPv4 or IPv6
+  hints.ai_socktype = SOCK_DGRAM; //datagram socket
   hints.ai_flags = 0;
-  hints.ai_protocol = 0;          /* Any protocol */
+  hints.ai_protocol = 0; //any protocol
 
   s = getaddrinfo(argv[1], argv[2], &hints, &result);
   if (s != 0) {
@@ -43,10 +43,10 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  // getaddrinfo() returns a list of address structures.
-  // Try each address until we successfully connect(2).
-  // If socket(2) (or connect(2)) fails, we (close the socket
-  // and) try the next address.
+  //getaddrinfo() returns a list of address structures.
+  //Try each address until we successfully connect(2).
+  //If socket(2) (or connect(2)) fails, we (close the socket
+  //and) try the next address.
 
   for (rp = result; rp != NULL; rp = rp->ai_next) 
   {
