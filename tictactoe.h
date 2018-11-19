@@ -13,10 +13,12 @@ class TicTacToe
     void printTitle();
 
     //places a 'X' in a cordinate
+    //parameter: cord refers to the position in the board 0-9
     //return: 0 for valid move, 1 for invalid move
     int insert_x(int cord);
 
     //places a 'O' in a cordinate
+    //parameter: cord refers to the position in the board 0-9
     //return: 0 for valid move, 1 for invalid move
     int insert_o(int cord);
 
@@ -27,7 +29,8 @@ class TicTacToe
     void printBoard();
 
     //uses checkRow, checkColumn, and checkDiag to see if either 'O' or 'X' won
-    //returns 'O' or 'X' if win condition is met
+    //parameter: s refers to the specific selected 'O' or 'X' that is to be checked
+    //return: 'O' or 'X' if win condition is met
     char checkBoard(char s);
 
     //tallies win condition with +1
@@ -49,12 +52,15 @@ class TicTacToe
     char board[9]; //this will hold the 2D board as a 1D array, it being 3x3
 
     //checks for win condition in rows
+    //parameter: s refers to the specific selected 'O' or 'X' that is to be checked
     void checkRow(char s); //naive
 
     //checks for win condition in columns
+    //parameter: s refers to the specific selected 'O' or 'X' that is to be checked
     void checkColumn(char s); //naive
 
     //checks for win condition in diagonals
+    //parameter: s refers to the specific selected 'O' or 'X' that is to be checked
     void checkDiag(char s); //naive
 
     void checkTie();

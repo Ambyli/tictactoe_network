@@ -12,6 +12,7 @@
 using namespace std;
 
 #define BUF_SIZE 100
+#define ARG_MAX 3
 
 int main(int argc, char *argv[])
 {
@@ -24,7 +25,7 @@ int main(int argc, char *argv[])
   char response[BUF_SIZE];
   TicTacToe game = TicTacToe(); //create game object
 
-  if (argc != 3) //max min arg count
+  if (argc != ARG_MAX) //max min arg count
   {
     fprintf(stderr, "Usage: %s host port...\n", argv[0]);
     exit(EXIT_FAILURE);
