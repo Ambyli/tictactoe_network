@@ -114,10 +114,6 @@ int main(int argc, char *argv[])
     //send response to client and check 
     while(true)
     {
-      //print game board
-      game.printBoard();
-
-
       cout<<"Enter coordinate from 0-9 here: ";
       cin>>message;
       len = message.length() + 1; //+1 for terminating null byte, this is used only if message is a string
@@ -127,13 +123,20 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Exceeding message limitations\n");
         continue;
       }
+      //make sure input is a number
+      if(!isdigit(message[0]))
+      {
+        fprintf(stderr, "Exceeding message limitations\n");
+        continue;
+      }
+
       //send move into board
       if(game.insert_o(stoi(message)) == 0)
       {
         game.printBoard(); //print board with new valid move
         game.checkBoard('o'); //checkboard for win condition
         game.printScore();
-      }
+      } 
       else
       {
         cout<<"Invalid move!"<<endl;

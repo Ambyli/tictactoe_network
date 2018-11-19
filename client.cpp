@@ -94,6 +94,12 @@ int main(int argc, char *argv[])
     {
       fprintf(stderr, "Exceeding message limitations\n");
       continue;
+    } 
+    //make sure input is a number
+    if(!isdigit(message[0]))
+    {
+      fprintf(stderr, "Exceeding message limitations\n");
+      continue;
     }
     //just in case message is larger than BUF_SIZE (useful for messages larger than intended for tictactoe)
     if (len + 1 > BUF_SIZE) 
