@@ -2,12 +2,12 @@
 A simple tictactoe program that can be played over the internet.
 
 ToCompile:
-
-  make client
+    
+    make client
   
-  make server
+    make server
   
-  make clean
+    make clean
   
 
 ToRun:
